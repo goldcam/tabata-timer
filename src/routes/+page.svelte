@@ -6,6 +6,11 @@
 // --dark-purple: #0f0326ff;
 // --indian-red: #e65f5cff;
 
+import state from '$lib/state/state.svelte'
+
+import {claculateTimeRemaining} from '$lib/utils/utilFunctions.svelte';
+
+
 interface TimeObjec {
     sec: number;
     min: number;
@@ -26,52 +31,37 @@ const STATUS_TEXT = {
     PAUSE: 'Paused'
  } as const;
 
-const claculateTimeRemaining = (timeReminSec: number): TimeObjec => {
-    let sec = timeReminSec % 60; 
-    let min =  Math.floor(timeReminSec / 60);
-    return {sec, min}
-};
-let backgroundcolor: string = BACKGROUND_COLORS.GET_READY,
-    isRunning = false,        
-    timeLeft = 20,    
-    round = 0,
-    isWork = true,
-    totalRounds = 8,
-    timeRemaining = claculateTimeRemaining(30 * totalRounds),
-    isDone = false,
-    timer: number,
-    totalTime: TimeObjec = {
-        min:0,
-        sec:0
-    };
+let timer: number;
+    
 
 const switchPhase = (): void => {
-  isWork = !isWork;
-  timeLeft = isWork ? 20 : 10;
-  backgroundcolor = !isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
-  if (isWork) round++;
-  if (round > totalRounds) {
-    timeLeft = 0
-    round = totalRounds;
+  state.isWork = !state.isWork;
+  state.timeLeft = state.isWork ? 20 : 10;
+  state.backgroundcolor = !state.isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
+  if (state.isWork) state.round++;
+  if (state.round > state.totalRounds) {
+    state.timeLeft = 0
+    state.round = state.totalRounds;
     clearInterval(timer);
-    isRunning = false;
-    isWork = false; 
-    backgroundcolor = BACKGROUND_COLORS.GET_READY;
-    isDone = true;
+    state.isRunning = false;
+    state.isWork = false; 
+    state.backgroundcolor = BACKGROUND_COLORS.GET_READY;
+    state.isDone = true;
   }
 },
 startTabata = ():void =>  {
-  if (isRunning) return;
-  isRunning = true;
-  backgroundcolor = !isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
-  if(round === 0) round++;
-  if (timeLeft === 0) switchPhase(); // if paused at 0
+    console.log(state.isRunning)
+  if (state.isRunning) return;
+  state.isRunning = true;
+  state.backgroundcolor = !state.isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
+  if(state.round === 0) state.round++;
+  if (state.timeLeft === 0) switchPhase(); // if paused at 0
 
   timer = setInterval(() => {
-    totalTime = incrementTime(totalTime);
-    timeRemaining = decrementTime(timeRemaining)
-    if (timeLeft > 1) {
-      timeLeft--;
+    state.totalTime = incrementTime(state.totalTime);
+    state.timeRemaining = decrementTime(state.timeRemaining)
+    if (state.timeLeft > 1) {
+      state.timeLeft--;
     } else {
       switchPhase();
     }
@@ -79,18 +69,18 @@ startTabata = ():void =>  {
 },
 pauseTabata = ():void =>  {
   clearInterval(timer);
-  isRunning = false;  
-  backgroundcolor = BACKGROUND_COLORS.PAUSE;
+  state.isRunning = false;  
+  state.backgroundcolor = BACKGROUND_COLORS.PAUSE;
 },
 resetTabata = ():void => {
   pauseTabata();
-  timeLeft = 20;
-  timeRemaining = claculateTimeRemaining(30 * totalRounds);
-  round = 0; 
-  isWork = true; 
-  backgroundcolor = BACKGROUND_COLORS.GET_READY;
-  isDone = false;
-  totalTime = {
+  state.timeLeft = 20;
+  state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds);
+  state.round = 0; 
+  state.isWork = true; 
+  state.backgroundcolor = BACKGROUND_COLORS.GET_READY;
+  state.isDone = false;
+  state.totalTime = {
         min:0,
         sec:0
     };
@@ -120,42 +110,42 @@ lesThanTen =  (num:number):boolean => num < 10;
 	<title>Tabata Timer</title>
 </svelte:head>
 
-<div class="main flex justify-center h-screen" style="--theme-backgroundcolor: {backgroundcolor}">
+<div class="main flex justify-center h-screen " style="--theme-backgroundcolor: {state.backgroundcolor}">
     <div class="wrap m-auto text-center w-sm">
         <div class="status text-5xl" >             
-            {#if !isRunning && round === 0} 
+            {#if !state.isRunning && state.round === 0} 
                 {STATUS_TEXT.PRE} 
-            {:else if isWork && isRunning}
+            {:else if state.isWork && state.isRunning}
                 {STATUS_TEXT.WORK}
-            {:else if !isWork && isRunning}
+            {:else if !state.isWork && state.isRunning}
                 {STATUS_TEXT.REST}
-            {:else if !isRunning && !isDone} 
+            {:else if !state.isRunning && !state.isDone} 
                 {STATUS_TEXT.PAUSE}
-            {:else if isDone}
+            {:else if state.isDone}
                 {STATUS_TEXT.DONE}             
             {/if} 
         </div>
         <div class="timer text-[9rem] flex justify-center" >
                 <div>00:</div>
-                <div class="w-[180px]">{#if lesThanTen(timeLeft)}0{/if}{timeLeft}</div>
+                <div class="w-[180px]">{#if lesThanTen(state.timeLeft)}0{/if}{state.timeLeft}</div>
         </div>
         <div class="flex justify-around">
             <div class="text-lg flex flex-col basis-0">
                 <span>Total</span>
-                <span>{#if lesThanTen(totalTime.min)}0{/if}{totalTime.min}:{#if lesThanTen(totalTime.sec)}0{/if}{totalTime.sec}</span>                
+                <span>{#if lesThanTen(state.totalTime.min)}0{/if}{state.totalTime.min}:{#if lesThanTen(state.totalTime.sec)}0{/if}{state.totalTime.sec}</span>                
             </div>
             <div class="text-lg flex flex-col basis-0">
                 <span>Round</span>
-                <span>{round}/{totalRounds}</span>
+                <span>{state.round}/{state.totalRounds}</span>
             </div>
              <div class="text-lg flex flex-col basis-0">
                 <span>Remaining</span>
-                <span>{#if lesThanTen(timeRemaining.min)}0{/if}{timeRemaining.min}:{#if lesThanTen(timeRemaining.sec)}0{/if}{timeRemaining.sec}</span>                
+                <span>{#if lesThanTen(state.timeRemaining.min)}0{/if}{state.timeRemaining.min}:{#if lesThanTen(state.timeRemaining.sec)}0{/if}{state.timeRemaining.sec}</span>                
             </div>
         </div>
         <div class="text-3xl flex justify-between">        
-            {#if !isDone}
-                {#if isRunning}
+            {#if !state.isDone}
+                {#if state.isRunning}
                     <button class="btn" onclick={pauseTabata}>
                         Pause
                     </button>                
