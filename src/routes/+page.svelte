@@ -10,6 +10,10 @@ import state from '$lib/state/state.svelte'
 
 import {claculateTimeRemaining} from '$lib/utils/utilFunctions.svelte';
 
+//initalize timeRemaininng 
+state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds)
+
+
 
 interface TimeObjec {
     sec: number;
