@@ -1,231 +1,161 @@
 <script lang="ts">
-    import Select from "$lib/components/Select.svelte";
 
-   
+    /* CSS HEX */
+// --engineering-orange: #ba2d0bff;
+// --honeydew: #d5f2e3ff;
+// --cambridge-blue: #73ba9bff;
+// --british-racing-green: #003e1fff;
+// --night: #01110aff;
+// --oldgold: #E2C044ffs
 
-    interface TabataData {
-        isRunning:boolean;
-        displayExcersie:boolean;
-        excersieMinuteValue: string;
-        excersieSecondsValue: string;
-        restMinuteValue: string;
-        restSecondsValue: string;
-        cycleOptionsValue: string;
-        initalCountdownValue: string;
-        displayMin: number;
-        displaySec: number;
+
+//  CSS HEX
+// --icterine: #ffff82ff;
+// --beige: #f5f7dcff;
+// --celadon: #b5d99cff;
+// --dark-purple: #0f0326ff;
+// --indian-red: #e65f5cff;
+
+const BACKGROUND_COLORS = { 
+    GET_READY: '#ffff82ff',
+    WORK: "#b5d99cff",
+    REST: '#e65f5cff',
+    PAUSE: '#ffff82ff',
+
+} as const;
+const STATUS_TEXT = {
+    PRE: 'Get Ready',
+    WORK: 'Work',
+    REST: 'Rest',
+    DONE: 'Done',
+    PAUSE: 'Paused'
+ } as const;
+let backgroundcolor: string = BACKGROUND_COLORS.GET_READY,
+    isRunning = false,        
+    timeLeft = 20,
+    round = 0,
+    isWork = true,
+    totalRounds = 1,
+    isDone = false,
+    timer: number;
+const totalTime = {
+    min:0,
+    sec:0
+}
+
+const switchPhase = (): void => {
+  isWork = !isWork;
+  timeLeft = isWork ? 20 : 10;
+  backgroundcolor = !isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
+  if (isWork) round++;
+  if (round > totalRounds) {
+    timeLeft = 0
+    round = totalRounds;
+    clearInterval(timer);
+    isRunning = false;
+    isWork = false; 
+    backgroundcolor = BACKGROUND_COLORS.GET_READY;
+    isDone = true;
+  }
+},
+startTabata = ():void =>  {
+  if (isRunning) return;
+  isRunning = true;
+  backgroundcolor = !isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
+  if(round === 0) round++;
+  if (timeLeft === 0) switchPhase(); // if paused at 0
+  timer = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+    } else {
+      switchPhase();
     }
-
-    
-
-    const excersieMinPlaceholder:string = 'Excersie Minutes Interval', 
-          excersieSecPlaceholder:string = 'Excersie Seconds Interval',
-          restMinPlaceholder:string = 'Rest Minutes Interval', 
-          restSecPlaceholder:string = 'Rest Seconds Interval',
-          cycleOptionsPlaceholder: string = 'Number of Cycles',
-          initalCountdownPlaceholder: string = 'Inital countdown';
-          
-
-    
-
-    const excersieSecondsOptions: number[] = [], 
-          excersieMinuteOptions: number[] = [], 
-          restSecondsOptions: number[] = [], 
-          restMinuteOptions: number[] = [],
-          initalCountdownOptions : number[] = [],
-          cycleOptions: number[] = [];   
-
-    for(let i = 0; i < 60; i++){
-        excersieSecondsOptions.push(i);
-        excersieMinuteOptions.push(i);
-
-        restSecondsOptions.push(i);
-        restMinuteOptions.push(i);
-
-        initalCountdownOptions.push(i);
+  }, 1000);
+},
+pauseTabata = ():void =>  {
+  clearInterval(timer);
+  isRunning = false;  
+  backgroundcolor = BACKGROUND_COLORS.PAUSE;
+},
+resetTabata = ():void => {
+  pauseTabata();
+  timeLeft = 20;
+  round = 0; 
+  isWork = true; 
+  backgroundcolor = BACKGROUND_COLORS.GET_READY;
+  isDone = false;
+},
+calculateTotalTime = () => {
+    totalTime.sec++;
+    if(totalTime.sec = 59) {
+        totalTime.sec = 0;
+        totalTime.min ++; 
     }
-    for(let i = 1; i <= 100; i++ ) {
-        cycleOptions.push(i);
-    }
-
- 
-
-
-    export const tabataData: TabataData = $state({
-        isRunning: false,
-        displayExcersie: true,
-        excersieMinuteValue: '',
-        excersieSecondsValue: '',
-        restMinuteValue: '',
-        restSecondsValue: '',
-        cycleOptionsValue: '',
-        initalCountdownValue: '',
-        displayMin: 0, 
-        displaySec: 0
-    })
-
-
-
-
-    let  timer: number, //for interval
-        numberOfCycles: number = 0;
-   
-
-    const tabataTimer = ():void => {
-        let { isRunning, 
-              displayExcersie,
-              excersieMinuteValue,
-              excersieSecondsValue,
-              restMinuteValue,
-              restSecondsValue,
-              cycleOptionsValue,
-              displayMin,
-              displaySec
-            //   initalCountdownValue  
-            } = tabataData;
-
-        let excersieMinute = Number(excersieMinuteValue), 
-            excersieSeconds = Number(excersieSecondsValue),
-            restMinutes = Number(restMinuteValue),
-            restSeconds = Number(restMinuteValue);
-        numberOfCycles = Number(cycleOptionsValue);
-
-        
-        isRunning = !isRunning;
-        console.log('tabataTimer...', {isRunning})
-        if(isRunning) {
-            timer = setInterval(() => {
-                console.log('setInterval....', {numberOfCycles, displayExcersie, displayMin, displaySec})
-                if(numberOfCycles > 0) {                   
-                    if(displayExcersie) {
-                        if(displayMin === 0 && displaySec === 0 ){
-                            displayExcersie = !displayExcersie;   
-                            displaySec = Number(tabataData.restSecondsValue);
-                            displayMin = Number(tabataData.restMinuteValue);
-                            tabataData.displayMin = displayMin;
-                            tabataData.displaySec = displaySec;                        
-                        } else {
-                            displaySec--;
-                            tabataData.displaySec = displaySec;
-                            if(displaySec === 0 && displayMin > 0) {
-                                displayMin--;
-                                tabataData.displayMin = displayMin;
-                                displaySec = 59;
-                                tabataData.displaySec = displaySec;
-                            }
-                        }
-
-                    }else {                        
-                         if(displayMin === 0 && displaySec === 0 ){
-                            displayExcersie = !displayExcersie;
-                            numberOfCycles--;
-                            tabataData.cycleOptionsValue = numberOfCycles.toString(); 
-                            displaySec = Number(tabataData.excersieSecondsValue);
-                            displayMin = Number(tabataData.excersieMinuteValue);   
-                            tabataData.displayMin = displayMin;
-                            tabataData.displaySec = displaySec;                          
-                        } else {
-                            displaySec--;
-                            tabataData.displaySec = displaySec;
-                            if(displaySec === 0 && displayMin > 0) {
-                                displayMin--;
-                                tabataData.displayMin = displayMin;
-                                displaySec = 59;
-                                tabataData.displaySec = displaySec;
-                            }
-                        }
-                    }                        
-                } else {
-                    isRunning = false;
-                    clearInterval(timer);
-                }                
-            }, 1000);
-        } else {
-            clearInterval(timer);
-        }
-
-    }
-    const resetTabata = ():void => {
-        // isRunning = false;
-        // timerObj.sec = 0;
-        // timerObj.min = 0;
-        // timerObj.hour = 0;
-    }
-    
-    const excersieMinChange = () => {
-        tabataData.displayMin = Number(tabataData.excersieMinuteValue);        
-    }
-    const excersieSecChange = () => {
-        tabataData.displaySec = Number(tabataData.excersieSecondsValue);        
-    }
-    
-
+},
+lesThanTen =  (num:number):boolean => num < 10; 
 </script>
 
 <svelte:head>
 	<title>Tabata Timer</title>
 </svelte:head>
 
-<div class="main">
-    <div class="clockWrap">
-        <form action="" class="tabataForm">
-            <h2>Excersie Interval</h2>   
-            <Select name="excersieMin" 
-                    id="excersieMin"
-                    bind:bindValue={tabataData.excersieMinuteValue}
-                    plceholderText={excersieMinPlaceholder}
-                    options={excersieMinuteOptions}
-                    onchange={excersieMinChange} />  
-
-            <Select name="excersieSec" 
-                    id="excersieSec"
-                    bind:bindValue={tabataData.excersieSecondsValue}
-                    plceholderText={excersieSecPlaceholder}
-                    options={excersieSecondsOptions}
-                    onchange={excersieSecChange} /> 
-
-            <h2>Rest Interval</h2>
-            <Select name="restMin" 
-                    id="restMin"
-                    bind:bindValue={tabataData.restMinuteValue}
-                    plceholderText={restMinPlaceholder}
-                    options={restMinuteOptions} 
-                    onchange={() => {}}/>   
-
-            <Select name="restSec" 
-                    id="restSec"
-                    bind:bindValue={tabataData.restSecondsValue}
-                    plceholderText={restSecPlaceholder}
-                    options={restSecondsOptions}
-                    onchange={() => {}} /> 
-            
-            <h2>{cycleOptionsPlaceholder}</h2>
-            <Select name='cycleOptions' 
-                    id='cycleOptions' 
-                    plceholderText={cycleOptionsPlaceholder} 
-                    options={cycleOptions} 
-                    bind:bindValue={tabataData.cycleOptionsValue}
-                    onchange={() => {}} />
-
-            <!-- <h2>{initalCountdownPlaceholder}</h2>
-            <Select name='initalCountdown' 
-                    id='initalCountdown' 
-                    plceholderText={initalCountdownPlaceholder} 
-                    options={initalCountdownOptions} 
-                    bind:bindValue={tabataData.initalCountdownValue} /> -->
-            
-            
-
-            <div id="display">{#if tabataData.displayMin < 10}0{/if}{tabataData.displayMin} : {#if tabataData.displaySec < 10}0{/if}{tabataData.displaySec} Cycles Remaining: {tabataData.cycleOptionsValue}</div>
-            <button id="Btn" onclick={tabataTimer}>
-                {#if tabataData.isRunning}
-                    Pause
+<div class="main flex justify-center h-screen" style="--theme-backgroundcolor: {backgroundcolor}">
+    <div class="wrap m-auto text-center w-sm">
+        <div class="status text-5xl" >             
+            {#if !isRunning && round === 0} 
+                {STATUS_TEXT.PRE} 
+            {:else if isWork && isRunning}
+                {STATUS_TEXT.WORK}
+            {:else if !isWork && isRunning}
+                {STATUS_TEXT.REST}
+            {:else if !isRunning && !isDone} 
+                {STATUS_TEXT.PAUSE}
+            {:else if isDone}
+                {STATUS_TEXT.DONE}             
+            {/if} 
+        </div>
+        <div class="timer text-9xl" >00:{#if lesThanTen(timeLeft)}0{/if}{timeLeft}</div>
+        <div class="flex justify-around">
+            <div>
+                Total Time:
+                {#if lesThanTen(totalTime.min)}0{/if}{totalTime.min}:{#if lesThanTen(totalTime.sec)}0{/if}{totalTime.sec}
+            </div>
+            <div class="text-lg">Round: <span>{round}</span>/{totalRounds}</div>
+        </div>
+        <div class="text-3xl flex justify-between">        
+            {#if !isDone}
+                {#if isRunning}
+                    <button class="btn" onclick={pauseTabata}>
+                        Pause
+                    </button>                
                 {:else}
-                Start
+                    <button class="btn" onclick={startTabata}>
+                        Start
+                    </button>
                 {/if}
-            </button>
-            <button id="resetBtn" onclick={resetTabata}>Reset</button>
-        </form>        
+            {:else}
+                <div class="font-bold py-4 px-6 uppercase">End</div>
+            {/if}            
+            <button class="btn" onclick={resetTabata}>Reset</button>
+        </div>
     </div>
 </div>
 
+<style lang="postcss">
+
+/* CSS HEX */
+ /* --engineering-orange: #ba2d0bff;
+ --honeydew: #d5f2e3ff;
+ --cambridge-blue: #73ba9bff;
+ --british-racing-green: #003e1fff;
+ --night: #01110aff;
+ --oldgold: #E2C044ff; */
+ .main {
+  	background: var(--theme-backgroundcolor);
+    transition: background .3s ease-in;
+    color: #0f0326ff;
+    text-transform: uppercase;
+ }
+ 
+    
+</style>

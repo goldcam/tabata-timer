@@ -1,3 +1,8 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+
+.btn {
+    @apply font-bold py-4 px-6 rounded uppercase;
+}
