@@ -1,14 +1,4 @@
 <script lang="ts">
-
-    /* CSS HEX */
-// --engineering-orange: #ba2d0bff;
-// --honeydew: #d5f2e3ff;
-// --cambridge-blue: #73ba9bff;
-// --british-racing-green: #003e1fff;
-// --night: #01110aff;
-// --oldgold: #E2C044ffs
-
-
 //  CSS HEX
 // --icterine: #ffff82ff;
 // --beige: #f5f7dcff;
@@ -183,14 +173,6 @@ lesThanTen =  (num:number):boolean => num < 10;
 </div>
 
 <style lang="postcss">
-
-/* CSS HEX */
- /* --engineering-orange: #ba2d0bff;
- --honeydew: #d5f2e3ff;
- --cambridge-blue: #73ba9bff;
- --british-racing-green: #003e1fff;
- --night: #01110aff;
- --oldgold: #E2C044ff; */
  .main {
   	background: var(--theme-backgroundcolor);
     transition: background .3s ease-in;
