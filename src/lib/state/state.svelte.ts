@@ -8,6 +8,7 @@ export interface TimeObjec {
 }
 
 
+
 export interface ApplicationState {
     backgroundcolor: string;
     isRunning:boolean;
@@ -18,6 +19,7 @@ export interface ApplicationState {
     timeRemaining: TimeObjec;
     totalTime: TimeObjec;
     isDone: boolean;
+    currentPhase: 'pre' | 'work' | 'rest' | 'paused' | 'done';
 }
 
 export const applicationState = $state<ApplicationState>({
@@ -36,6 +38,7 @@ export const applicationState = $state<ApplicationState>({
         sec: 0
     },    
     isDone:false,
+    currentPhase: 'pre'
 });
 
 

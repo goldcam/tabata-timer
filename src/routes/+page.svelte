@@ -8,6 +8,8 @@
 
 import state from '$lib/state/state.svelte';
 import { claculateTimeRemaining } from '$lib/utils/utilFunctions.svelte';
+
+// Components
 import Timer from '$lib/components/timer/timer.svelte';
 import StatusDisplay from '$lib/components/statusDisplay/statusDisplay.svelte';
 import TimeMetrics from '$lib/components/timeMetrics/timeMetrics.svelte';
@@ -22,7 +24,7 @@ state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds)
 
 <div class="main flex justify-center h-screen " style="--theme-backgroundcolor: {state.backgroundcolor}">
     <div class="wrap m-auto text-center w-sm">
-        <StatusDisplay />
+        <StatusDisplay currentPhase={state.currentPhase} />
         <Timer />
         <TimeMetrics />
         <Controls />
