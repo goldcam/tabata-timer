@@ -17,14 +17,11 @@ state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds)
 
 <div class="main flex justify-center h-screen " style="--theme-backgroundcolor: {state.backgroundcolor}">
     <div class="wrap m-auto text-center w-sm">
-        <StatusDisplay currentPhase={state.currentPhase} />
-        
+        <StatusDisplay currentPhase={state.currentPhase} />        
         <Timer timeLeftInPhase={state.timeLeft} />
-
         <TimeMetrics currentRound={state.round} 
                      totalElapsedTime={state.totalTime} 
-                     timeRemaining={state.timeRemaining} />
-        
+                     timeRemaining={state.timeRemaining} />        
         <Controls />
     </div>
 </div>
