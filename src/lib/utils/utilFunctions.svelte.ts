@@ -8,7 +8,9 @@ export const claculateTimeRemaining = (timeReminSec: number): TimeObjec => {
 
 export const lessThanTen = (num: number): boolean => num < 10;
 
-export const createFormatTime = (lessThanTen: (n: number) => boolean) => (
+export const createFormatTime = (
+    lessThanTen: (n: number) => boolean
+) => (
     num:number
 ): string => lessThanTen(num) ? `0${num}` : `${num}`;
 

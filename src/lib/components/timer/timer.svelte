@@ -1,5 +1,5 @@
 <script lang='ts' >
-    import {formatTime} from '../../utils/utilFunctions.svelte';
+    import { formatTime } from '$lib/utils/utilFunctions.svelte';
     let {timeLeftInPhase} = $props(); 
 </script>
 

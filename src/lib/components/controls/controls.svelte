@@ -4,7 +4,7 @@
     import { BACKGROUND_COLORS } from '$lib/constants/constants.svelte';
     import { claculateTimeRemaining } from '$lib/utils/utilFunctions.svelte';
 
-let timer: number;
+let timer: NodeJS.Timeout;
 
 
 export const workUpdateState = ():void => {

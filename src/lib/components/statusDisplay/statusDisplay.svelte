@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { STATUS_TEXT } from '../../constants/constants.svelte';
+    import { STATUS_TEXT } from '$lib/constants/constants.svelte';
     let { currentPhase } = $props();
     const statusText = $derived.by(() => {
         switch (currentPhase) {
@@ -14,6 +14,6 @@
 </script>
 
 
-<div class="status text-5xl" >             
-    {statusText}
+<div class="status " >             
+    <h1 class="text-5xl">{statusText}</h1>
 </div>

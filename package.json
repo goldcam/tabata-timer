@@ -13,7 +13,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"run-tests": "vitest run",
+		"coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
@@ -24,7 +25,9 @@
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^24.0.13",
 		"@vitest/browser": "^3.2.3",
+		"@vitest/coverage-v8": "3.2.4",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-svelte": "^3.0.0",
@@ -33,6 +36,7 @@
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
 		"prettier-plugin-tailwindcss": "^0.6.11",
+		"sinon": "^21.0.0",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tailwindcss": "^4.0.0",
@@ -41,5 +45,8 @@
 		"vite": "^6.2.6",
 		"vitest": "^3.2.3",
 		"vitest-browser-svelte": "^0.1.0"
+	},
+	"dependencies": {
+		"@types/sinon": "^17.0.4"
 	}
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import state from '../../state/state.svelte';
-    import { formatTime, claculateTimeRemaining } from '$lib/utils/utilFunctions.svelte';
+    import state from '$lib/state/state.svelte';
+    import { formatTime } from '$lib/utils/utilFunctions.svelte';
 
     let {currentRound, timeRemaining, totalElapsedTime} = $props();
 
