@@ -14,7 +14,4 @@ export const createFormatTime = (lessThanTen: (n: number) => boolean) => (
 
 export const formatTime = createFormatTime(lessThanTen);
 
-//gemini generated
-export const calculateTotalTabataDuration = (rounds: number, workSecs: number, restSecs: number, prepSecs: number): number => {
-    return prepSecs + (rounds * workSecs) + (rounds * restSecs);
-};
+export const calculateTotalTabataDuration = (rounds: number, workSecs: number, restSecs: number, prepSecs: number): number => prepSecs + (rounds * workSecs) + (rounds * restSecs);

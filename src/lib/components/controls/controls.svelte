@@ -3,15 +3,35 @@
     import type { TimeObjec } from '$lib/state/state.svelte';
     import { BACKGROUND_COLORS } from '$lib/constants/constants.svelte';
     import { claculateTimeRemaining } from '$lib/utils/utilFunctions.svelte';
-    let timer: number;
+
+let timer: number;
 
 
 export const workUpdateState = ():void => {
     state.backgroundcolor = state.isWork ? BACKGROUND_COLORS.WORK : BACKGROUND_COLORS.REST;
     state.currentPhase = state.isWork ? 'work' : 'rest'; 
 },
-//TODO pass workUpdateState in create function
-switchPhase = (): void => {
+incrementTime = (timeObj: TimeObjec): TimeObjec => {
+    timeObj.sec++;
+    if (timeObj.sec === 59) {
+        timeObj.sec = 0;
+        timeObj.min++;
+    }
+
+    return timeObj
+},
+decrementTime = (timeObj: TimeObjec): TimeObjec => {
+    if (timeObj.sec === 0 && timeObj.min > 0) {
+        timeObj.sec = 59;
+        timeObj.min--;
+    } else {
+        timeObj.sec--;
+    }
+    return timeObj
+},
+createSwitchPhase = (
+    workUpdateState: () => void
+) => ():void => {
         state.isWork = !state.isWork;
         state.timeLeft = state.isWork ? 20 : 10;
         workUpdateState();
@@ -27,14 +47,17 @@ switchPhase = (): void => {
             state.currentPhase = 'done';
         }
 },
-    startTabata = (): void => {
-        console.log(state.isRunning)
+switchPhase = createSwitchPhase(workUpdateState),
+createStartTabata = (
+    workUpdateState: () => void,
+    incrementTime: (t: TimeObjec) => TimeObjec,
+    decrementTime: (t: TimeObjec) => TimeObjec
+) => ():void => {
         if (state.isRunning) return;
         state.isRunning = true;
         workUpdateState();
         if (state.round === 0) state.round++;
         if (state.timeLeft === 0) switchPhase(); // if paused at 0
-
         timer = setInterval(() => {
             state.totalTime = incrementTime(state.totalTime);
             state.timeRemaining = decrementTime(state.timeRemaining)
@@ -44,14 +67,18 @@ switchPhase = (): void => {
                 switchPhase();
             }
         }, 1000);
-    },
-    pauseTabata = (): void => {
+},
+startTabata = createStartTabata(workUpdateState, incrementTime, decrementTime),
+pauseTabata = (): void => {
         clearInterval(timer);
         state.isRunning = false;
         state.backgroundcolor = BACKGROUND_COLORS.PAUSE;
         state.currentPhase = 'paused';
     },
-    resetTabata = (): void => {
+createResetTabata = (
+    pauseTabata:() => void, 
+    claculateTimeRemaining:(n:number) => TimeObjec    
+) => ():void => {
         pauseTabata();
         state.timeLeft = 20;
         state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds);
@@ -64,25 +91,8 @@ switchPhase = (): void => {
             sec: 0
         };
         state.currentPhase = 'pre';
-    },
-    incrementTime = (timeObj: TimeObjec): TimeObjec => {
-        timeObj.sec++;
-        if (timeObj.sec === 59) {
-            timeObj.sec = 0;
-            timeObj.min++;
-        }
-
-        return timeObj
-    },
-    decrementTime = (timeObj: TimeObjec): TimeObjec => {
-        if (timeObj.sec === 0 && timeObj.min > 0) {
-            timeObj.sec = 59;
-            timeObj.min--;
-        } else {
-            timeObj.sec--;
-        }
-        return timeObj
-    }; 
+},
+resetTabata = createResetTabata(pauseTabata, claculateTimeRemaining); 
 
 </script>
 

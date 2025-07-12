@@ -1,11 +1,4 @@
 <script lang="ts">
-//  CSS HEX
-// --icterine: #ffff82ff;
-// --beige: #f5f7dcff;
-// --celadon: #b5d99cff;
-// --dark-purple: #0f0326ff;
-// --indian-red: #e65f5cff;
-
 import state from '$lib/state/state.svelte';
 import { claculateTimeRemaining } from '$lib/utils/utilFunctions.svelte';
 
@@ -25,8 +18,13 @@ state.timeRemaining = claculateTimeRemaining(30 * state.totalRounds)
 <div class="main flex justify-center h-screen " style="--theme-backgroundcolor: {state.backgroundcolor}">
     <div class="wrap m-auto text-center w-sm">
         <StatusDisplay currentPhase={state.currentPhase} />
-        <Timer />
-        <TimeMetrics />
+        
+        <Timer timeLeftInPhase={state.timeLeft} />
+
+        <TimeMetrics currentRound={state.round} 
+                     totalElapsedTime={state.totalTime} 
+                     timeRemaining={state.timeRemaining} />
+        
         <Controls />
     </div>
 </div>

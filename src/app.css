@@ -2,6 +2,14 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
+/* 
+//  CSS HEX
+// --icterine: #ffff82ff;
+// --beige: #f5f7dcff;
+// --celadon: #b5d99cff;
+// --dark-purple: #0f0326ff;
+// --indian-red: #e65f5cff; */
+
 
 .btn {
     @apply font-bold py-4 px-6 rounded uppercase;
