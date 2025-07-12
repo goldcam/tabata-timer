@@ -6,26 +6,32 @@
     let timer: number;
 
 
-export const switchPhase = (): void => {
-    state.isWork = !state.isWork;
-    state.timeLeft = state.isWork ? 20 : 10;
-    state.backgroundcolor = !state.isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
-    if (state.isWork) state.round++;
-    if (state.round > state.totalRounds) {
-        state.timeLeft = 0
-        state.round = state.totalRounds;
-        clearInterval(timer);
-        state.isRunning = false;
-        state.isWork = false;
-        state.backgroundcolor = BACKGROUND_COLORS.GET_READY;
-        state.isDone = true;
-    }
+export const workUpdateState = ():void => {
+    state.backgroundcolor = state.isWork ? BACKGROUND_COLORS.WORK : BACKGROUND_COLORS.REST;
+    state.currentPhase = state.isWork ? 'work' : 'rest'; 
+},
+//TODO pass workUpdateState in create function
+switchPhase = (): void => {
+        state.isWork = !state.isWork;
+        state.timeLeft = state.isWork ? 20 : 10;
+        workUpdateState();
+        if (state.isWork) state.round++;
+        if (state.round > state.totalRounds) {
+            state.timeLeft = 0
+            state.round = state.totalRounds;
+            clearInterval(timer);
+            state.isRunning = false;
+            state.isWork = false;
+            state.backgroundcolor = BACKGROUND_COLORS.GET_READY;
+            state.isDone = true;
+            state.currentPhase = 'done';
+        }
 },
     startTabata = (): void => {
         console.log(state.isRunning)
         if (state.isRunning) return;
         state.isRunning = true;
-        state.backgroundcolor = !state.isWork ? BACKGROUND_COLORS.REST : BACKGROUND_COLORS.WORK;
+        workUpdateState();
         if (state.round === 0) state.round++;
         if (state.timeLeft === 0) switchPhase(); // if paused at 0
 
@@ -43,6 +49,7 @@ export const switchPhase = (): void => {
         clearInterval(timer);
         state.isRunning = false;
         state.backgroundcolor = BACKGROUND_COLORS.PAUSE;
+        state.currentPhase = 'paused';
     },
     resetTabata = (): void => {
         pauseTabata();
@@ -56,6 +63,7 @@ export const switchPhase = (): void => {
             min: 0,
             sec: 0
         };
+        state.currentPhase = 'pre';
     },
     incrementTime = (timeObj: TimeObjec): TimeObjec => {
         timeObj.sec++;
